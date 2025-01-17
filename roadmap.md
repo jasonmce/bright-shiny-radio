@@ -26,5 +26,8 @@ bash -c  "$(curl -sL https://raw.githubusercontent.com/jasonmce/aws-playlist/mas
 Create a cool custom case including "on the air" text
 Add screen shots and pictures of my transmitter to the README
 
+## Improvements
+Switch fm_transmitter to use https://github.com/ChristopheJacquet/PiFmRds which includes RDS
+
 ## Thanks to
 https://convertio.co/
