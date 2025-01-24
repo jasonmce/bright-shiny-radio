@@ -31,7 +31,7 @@ The result? A Raspberry Pi broadcasting a single song and an accompanying websit
 **Heads Up!**
 1. **Cost Alert**: Hosting the website on AWS incurs a small cost (~$1/month in low-traffic scenarios). Ensure you’re comfortable with potential expenses before proceeding.
 2. **Legal Compliance**: Ensure broadcasting FM signals is legal in your region.
-
+3. The installer script disables HDMI on your raspberry pi to save energy.  Delete the line "/usr/bin/tvservice -o" from /etc/rc.local and reboot to turn it back on.
 ---
 
 ## What You’ll Need
@@ -122,3 +122,5 @@ Got questions or need help? Check out the [documentation](https://github.com/jas
 [ChatGPT](https://chatgpt.com) For the spiffy 90's Radio Station website improvements
 
 [Convertio](https://convertio.co/) For generating the .ico file
+
+[Thomas Vanhoutte](https://thomas.vanhoutte.be/miniblog/how-much-energy-does-a-raspberry-pi-use-per-year-cost-calculation/)'s blog post on energy saving

@@ -39,6 +39,9 @@ chmod 755 player.sh
 # make it start at launch
 (crontab -l 2>/dev/null; echo "@reboot  /home/pi/player.sh")  | sort -u | crontab -
 
+## Turn off HDMI to save power, will take effect at next reboot.
+echo "/usr/bin/tvservice –o" | sudo tee -a /etc/rc.local
+
 ## Create an ini file of settings the player will need to run.
 CONFIG_FILE="player.ini"
 cat > "$CONFIG_FILE" <<EOF
