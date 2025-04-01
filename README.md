@@ -12,9 +12,9 @@ The result? A Raspberry Pi broadcasting a single song and an accompanying websit
 
 ## What’s Inside?
 
-- **FM Radio**: Broadcast a single `.wav` file using a Raspberry Pi.
+- **FM Transmitter**: Broadcast a single `.wav` file using a Raspberry Pi.
 - **AWS Integration**: Store and retrieve playlist data with DynamoDB and Lambda.
-- **Retro Website**: Display your station’s playlist in an eye-catching 90s design.
+- **Retro Website**: Display your station’s playlist in an eye-~~burning~~catching 90s design.
 
 ### How It Works
 1. The Raspberry Pi transmits a `.wav` file as an FM signal and posts the song details to AWS.
@@ -24,12 +24,12 @@ The result? A Raspberry Pi broadcasting a single song and an accompanying websit
 ---
 
 ## Features
-- Broadcast a single song in `.wav` format.
+- FM Broadcast a single song in `.wav` format, and related RDS information.
 - Automatically log song details (artist, title, duration) via AWS Lambda.
 - Display the last five songs played on the website.
 
 **Heads Up!**
-1. **Cost Alert**: Hosting the website on AWS incurs a small cost (~$1/month in low-traffic scenarios). Ensure you’re comfortable with potential expenses before proceeding.
+1. **Cost Alert**: Hosting the website on AWS incurs a small cost (~$1/month in low-traffic scenarios). Ensure you’re comfortable with potential expenses before proceeding.  I'm paying $0.50/month for Route53, and $0.04/month for everything else = $0.54 total/month.  I pay $14/year for brightshinyradio.com domain registration as well.
 2. **Legal Compliance**: Ensure broadcasting FM signals is legal in your region.
 3. The installer script disables HDMI on your raspberry pi to save energy.  Delete the line "/usr/bin/tvservice -o" from /etc/rc.local and reboot to turn it back on.
 ---
@@ -124,3 +124,5 @@ Got questions or need help? Check out the [documentation](https://github.com/jas
 [Convertio](https://convertio.co/) For generating the .ico file
 
 [Thomas Vanhoutte](https://thomas.vanhoutte.be/miniblog/how-much-energy-does-a-raspberry-pi-use-per-year-cost-calculation/)'s blog post on energy saving
+
+[Wikipedia](https://en.wikipedia.org/wiki/Radio_Data_System) for their RDS writeup
