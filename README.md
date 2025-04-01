@@ -112,7 +112,7 @@ The result? A Raspberry Pi broadcasting a single song and an accompanying websit
 ## Enjoy Your BrightShinyRadio Station
 Once everything is set up, you’ll have your own mini radio station broadcasting a single song, complete with a retro-themed website to show off your playlist. Whether for fun, nostalgia, or a creative project, BrightShinyRadio is here to spread nerdy joy within a 100-meter radius. 🎵📻
 
-Got questions or need help? Check out the [documentation](https://github.com/jasonmce/pi-radio-aws-site) or open an issue in the GitHub repo. Happy broadcasting!
+Got questions or need help? Check out the [documentation](https://github.com/jasonmce/bright-shiny-radio) or open an issue in the GitHub repo. Happy broadcasting!
 
 ## Thanks to!
 [Whip Antenna Length And Frequency Calculator](http://www.csgnetwork.com/antennagenericfreqlencalc.html)
