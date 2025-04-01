@@ -18,6 +18,8 @@ fi
 
 echo "Using configuration:"
 echo "Broadcasting on Frequency: $FREQUENCY"
+echo "RDS Station Code: $STATION_CODE"
+echo "RDS Station Name: $STATION_NAME"
 echo "Artist: $ARTIST"
 echo "Title: $TITLE"
 echo "Duration: $DURATION seconds"
@@ -26,6 +28,8 @@ echo "API security token: $API_KEY"
 
 ## Gracefully exit with a message if any variable is unset.
 : ${FREQUENCY:?Must set FREQUENCY.}
+: ${STATION_CODE:?Must set STATION_CODE.}
+: ${STATION_NAME:?Must set STATION_NAME.}
 : ${ARTIST:?Must set ARTIST.}
 : ${TITLE:?Must set TITLE.}
 : ${DURATION:?Must set DURATION.}
@@ -47,6 +51,6 @@ do
       -d "{\"artist\": \"$ARTIST\", \"title\": \"$TITLE\", \"duration\": $DURATION}" \
       "$API_URL"
 
-  sudo ./fm_transmitter -f $FREQUENCY song.wav
+  sudo ./pi_fm_rds -freq $FREQUENCY -audio song.wav -pi $STATION_CODE -ps $STATION_NAME -rt "$ARTIST - $TITLE"
 
 done

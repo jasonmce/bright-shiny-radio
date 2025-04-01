@@ -5,31 +5,32 @@
 printf "###\n"
 printf "### Perform updates\n\n"
 
-sudo apt-get update \
+sudo apt-get update && sudo apt-get upgrade --yes\
 || exit_on_error "Failed to perform updates"
 
 printf "\n\n###\n"
 printf "### Install required libraries for the fm transmitter\n\n"
 
-sudo apt-get install make build-essential && \
-sudo apt-get install libraspberrypi-dev --yes \
-|| exit_on_error "Failed to perform updates"
+sudo apt install libsndfile1-dev --yes \
+|| exit_on_error "Failed to install required libraries"
 
 printf "\n\n###\n"
-printf "### Install the fm_transmitter\n"
+printf "### Install PiFmRds transmitter\n"
 
-curl -sL https://github.com/markondej/fm_transmitter/archive/refs/heads/master.zip --output fm_transmitter.zip
-unzip fm_transmitter.zip
-cd fm_transmitter-master
-make
-mv fm_transmitter ~/
+curl -sL https://github.com/ChristopheJacquet/PiFmRds/archive/refs/heads/master.zip --output PiFmRds.zip
+unzip PiFmRds.zip
+cd PiFmRds-master/src
+make clean && make \
+|| exit_on_error "Failed to make PiFmRds"
+
+mv pi_fm_rds ~/pi_fm_rds
 cd ~/
 
 printf "\n\n###\n"
-printf "### Clean up the fm_transmitter source\n"
+printf "### Clean up the PiFmRds source\n"
 
-rm fm_transmitter.zip
-rm -rf fm_transmitter-master
+rm PiFmRds.zip
+rm -rf PiFmRds-master
 
 printf "\n\n###\n"
 printf "### Copy the player script and make it executable\n"
@@ -49,6 +50,8 @@ CONFIG_FILE="player.ini"
 cat > "$CONFIG_FILE" <<EOF
 [settings]
 FREQUENCY="87.1" # The FM frequency to broadcast.
+STATION_CODE="iBSR" # The station code to broadcast.
+STATION_NAME="BSRadio" # The station name to broadcast, limit 8 characters.
 ARTIST="Favorite Band" # The artist of song.wav
 TITLE="Greatest song ever" # The title of song.wav
 DURATION=270 # Length of song.wav in seconds
