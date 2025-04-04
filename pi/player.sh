@@ -25,14 +25,16 @@ echo "Duration: $DURATION seconds"
 echo "API url: $API_URL"
 echo "API security token: $API_KEY"
 
-## Gracefully exit with a message if any variable is unset.
+## Gracefully exit with a message if any required variable is unset.
 : ${FREQUENCY:?Must set FREQUENCY.}
-: ${STATION_NAME:?Must set STATION_NAME.}
 : ${ARTIST:?Must set ARTIST.}
 : ${TITLE:?Must set TITLE.}
 : ${DURATION:?Must set DURATION.}
 : ${API_URL:?Must set API_URL.}
 : ${API_KEY:?Must set API_KEY.}
+
+# Set the RDS -ps flag if the station name is set.
+PS_FLAG=$([ -n "$STATION_NAME" ] && echo "-ps $STATION_NAME" || echo "$d")
 
 #Function of what trap command calls
 function ctrl_c() {
@@ -49,6 +51,6 @@ do
       -d "{\"artist\": \"$ARTIST\", \"title\": \"$TITLE\", \"duration\": $DURATION}" \
       "$API_URL"
 
-  sudo ./pi_fm_rds -freq $FREQUENCY -audio song.wav -ps "$STATION_NAME" -rt "$ARTIST - $TITLE"
+  sudo ./pi_fm_rds -freq $FREQUENCY -audio song.wav -rt "$ARTIST - $TITLE" ${PS_FLAG}
 
 done

@@ -50,7 +50,7 @@ CONFIG_FILE="player.ini"
 cat > "$CONFIG_FILE" <<EOF
 [settings]
 FREQUENCY="87.1" # The FM frequency to broadcast.
-STATION_NAME="MYRADIO" # The station name to broadcast, limit 8 characters.
+STATION_NAME="MYRADIO" # Optional station name to broadcast, limit 8 characters.
 ARTIST="Favorite Band" # The artist of song.wav
 TITLE="Greatest song ever" # The title of song.wav
 DURATION=270 # Length of song.wav in seconds
