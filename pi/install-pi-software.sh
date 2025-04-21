@@ -17,9 +17,9 @@ sudo apt install libsndfile1-dev --yes \
 printf "\n\n###\n"
 printf "### Install PiFmRds transmitter\n"
 
-curl -sL https://github.com/ChristopheJacquet/PiFmRds/archive/refs/heads/master.zip --output PiFmRds.zip
-unzip PiFmRds.zip
-cd PiFmRds-master/src
+curl -sL https://github.com/jasonmce/PiFmRds-single-play/archive/refs/heads/master.zip --output PiFmRds-single-play.zip
+unzip PiFmRds-single-play.zip
+cd PiFmRds-single-play-master/src
 make clean && make \
 || exit_on_error "Failed to make PiFmRds"
 
@@ -35,7 +35,7 @@ rm -rf PiFmRds-master
 printf "\n\n###\n"
 printf "### Copy the player script and make it executable\n"
 
-curl -sL https://raw.githubusercontent.com/jasonmce/pi-radio-aws-site/refs/heads/main/pi/player.sh --output player.sh
+curl -sL https://raw.githubusercontent.com/jasonmce/bright-shiny-radio/refs/heads/main/pi/player.sh --output player.sh
 chmod 755 player.sh
 # make it start at launch
 (crontab -l 2>/dev/null; echo "@reboot  /home/pi/player.sh")  | sort -u | crontab -
