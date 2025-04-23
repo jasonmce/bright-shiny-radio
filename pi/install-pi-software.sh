@@ -27,10 +27,10 @@ mv pi_fm_rds ~/pi_fm_rds
 cd ~/
 
 printf "\n\n###\n"
-printf "### Clean up the PiFmRds source\n"
+printf "### Clean up the PiFmRds-single-play source\n"
 
-rm PiFmRds.zip
-rm -rf PiFmRds-master
+rm PiFmRds-single-play.zip
+rm -rf PiFmRds-single-play-master
 
 printf "\n\n###\n"
 printf "### Copy the player script and make it executable\n"
