@@ -4,24 +4,38 @@
 # Raspberry Pi FM Transmitter Playback Script
 #
 # Description:
-#   This script continuously plays a specified audio file (`song.wav`) via
-#   an FM transmitter using PiFmRds, and logs each playback event to a
-#   remote server. It is designed for use on a Raspberry Pi with the
-#   PiFmRds software installed and configured.
+#   Continuously broadcasts a specified audio file (`song.wav`) on FM
+#   using PiFmRds, and posts playback events to a remote API.
 #
 # Requirements:
-#   - Raspberry Pi with PiFmRds installed
+#   - Running on a Raspberry Pi
+#   - `pi_fm_rds` in the same directory as this script and executable
+#   - `player.ini` with valid configuration and located in /home/pi
 #   - `song.wav` must be located in the same directory as this script
+#
+# Optional:
 #   - Internet connection for posting playback history
 #   - URL and Credentials to post API  playback history
+#   - 20-40 cm solid core wire antenna connected to Raspberry Pi GPIO pin 4
+#     Without an antenna your broadcast will be very weak
 #
 # Behavior:
 #   - Loops indefinitely, playing `song.wav` and posting playback logs
 #   - Handles graceful exit on user interruption (CTRL-C)
+#
+# Optional Flags:
+#   --configtest   Verifies configuration and presence of required files
+#   --status       List logged errors from the last 24 hours.
+#                  Exits with code 0 if no errors, or 1 if errors exist.
 ####
 
 # Application identifier for journalctl
 APP_NAME="player.sh"
+CONFIG_FILE="player.ini"
+
+# Flags for admin tasks
+do_configtest=false
+do_status=false
 
 # Color codes for console output
 COLOR_RESET='\033[0m'
@@ -31,7 +45,6 @@ COLOR_ERROR='\033[1;31m' # Bright red
 # Global error counter
 ERROR_COUNT=0
 
-# Displays a terminal message and log it.
 log_info() {
     local message="$1"
     local timestamp
@@ -40,7 +53,6 @@ log_info() {
     logger --tag "$APP_NAME" --priority user.info "$message"
 }
 
-# Displays a terminal message, log it, and increments an error counter.
 log_error() {
     local message="$1"
     local timestamp
@@ -50,53 +62,80 @@ log_error() {
     ((ERROR_COUNT++))
 }
 
-log_info "Starting " $APP_NAME
+# Parse arguments
+for arg in "$@"; do
+    case "$arg" in
+        --configtest) do_configtest=true ;;
+        --status)     do_status=true ;;
+        *) log_error "Unknown argument: $arg"; exit 2 ;;
+    esac
+done
 
-# Validate the presence of required files and directories
-if [ ! -x ./pi_fm_rds ]; then
-    log_error "Error: pi_fm_rds not found or not executable in current directory."
+### Status check
+# Display errors from the last 24 hours and use an exit code.
+if [ "$do_status" == true ]; then
+    error_list=$(journalctl --quiet -p err --since "24 hours ago" --identifier "$APP_NAME" --no-pager)
+    if [[ -z "$error_list" ]]; then
+        echo "No errors in the last 24 hours"
+        exit 0
+    else
+        echo "Errors in the last 24 hours:"
+        echo "$error_list"
+        exit 1
+    fi
 fi
 
-if [ ! -f "/home/pi/song.wav" ]; then
-    log_error "There is no song.wav file to transmit"
-fi
+log_info "Starting $APP_NAME"
 
-CONFIG_FILE="/home/pi/player.ini"
+# Validate the presence of required files
+[[ -x ./pi_fm_rds ]] || log_error "pi_fm_rds not found or not executable"
+[[ -f ./song.wav ]] || log_error "song.wav file not found"
 
-# Load configuration file
-if [[ -f "$CONFIG_FILE" ]]; then
-    source <(grep -E "^[a-zA-Z_]+=.+" "$CONFIG_FILE")
+# Load configuration file and validate
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    log_error "$CONFIG_FILE file not found"
 else
-    log_error "No player.ini configuration file found"
-fi
+    log_info "Loading configuration from $CONFIG_FILE"
+    source <(grep -E "^[a-zA-Z_]+=.+" "$CONFIG_FILE")
 
-log_info "Using configuration:"
-log_info "Broadcasting on Frequency: $FREQUENCY"
-log_info "RDS Station Name: $STATION_NAME"
-log_info "Artist: $ARTIST"
-log_info "Title: $TITLE"
-log_info "Duration: $DURATION seconds"
-log_info "API url: $API_URL"
-log_info "API security token: $API_KEY"
+    log_info "Broadcasting on Frequency: $FREQUENCY"
+    log_info "RDS Station Name: $STATION_NAME"
+    log_info "Artist: $ARTIST"
+    log_info "Title: $TITLE"
+    log_info "Duration: $DURATION seconds"
+    log_info "API url: $API_URL"
+    log_info "API security token: $API_KEY"
 
-# Validate frequency is a single decimal floating point number between 87.0 and 108.0.
-if ! [[ -n "$FREQUENCY" && "$FREQUENCY" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
-    log_error "FREQUENCY must be a numeric value, $FREQUENCY given"
-fi
-if ! awk -v f="$FREQUENCY" 'BEGIN { exit (f >= 87.0 && f <= 108.0) ? 0 : 1 }'; then
-    log_error "FREQUENCY must be between 87.0 and 108.0, $FREQUENCY given"
-fi
+    # Validate frequency is a single decimal floating point number between 87.0 and 108.0.
+    if ! [[ -n "$FREQUENCY" && "$FREQUENCY" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+        log_error "FREQUENCY must be a numeric value, $FREQUENCY given"
+    fi
+    if ! awk -v f="$FREQUENCY" 'BEGIN { exit (f >= 87.0 && f <= 108.0) ? 0 : 1 }'; then
+        log_error "FREQUENCY must be between 87.0 and 108.0, $FREQUENCY given"
+    fi
 
-if ! [[ -n "$DURATION" && "$DURATION" =~ ^[0-9]+$ ]]; then
-    log_error "DURATION must be an integer value (seconds), $DURATION given"
-fi
-if (( $DURATION < 5 )) || (( $DURATION > 1114 )); then
-    log_error "DURATION must be between 5 seconds and 1114 seconds (Alices Restaurant), $DURATION given"
-fi
+    [[ -n "$STATION_NAME" && ${#STATION_NAME} -gt 8 ]] && log_error "STATION_NAME must be 8 characters or less, got: '$STATION_NAME'"
 
-# Check URL format (basic check)
-if ! [[ "$API_URL" =~ ^https?:// ]]; then
-    log_error "API_URL must start with http:// or https://, $API_URL given"
+    [[ ! -n "$ARTIST" || ${#ARTIST} -gt 60 ]] && log_error "ARTIST must be between 1 and 60 characters, got: '$ARTIST'"
+    [[ ! -n "$TITLE" || ${#TITLE} -gt 60 ]] && log_error "TITLE must be between 1 and 60 characters, got: '$TITLE'"
+
+    # Validate combined length of ARTIST and TITLE is no more than 64 characters
+    combined_length=$(( ${#ARTIST} + ${#TITLE} + 3 ))  # +3 for " - " separator in RDS
+    if (( combined_length > 64 )); then
+        log_error "Combined ARTIST and TITLE length must be less than 62 characters (currently $combined_length) ARTIST='$ARTIST', TITLE='$TITLE'"
+    fi
+
+    # Validate duration (5 seconds to Alices Restaurant)
+    if ! [[ "$DURATION" =~ ^[0-9]+$ ]]; then
+        log_error "DURATION must be an integer, got: $DURATION"
+    elif (( DURATION < 5 || DURATION > 1114 )); then
+        log_error "DURATION must be between 5 and Alices Restaurant (1114 seconds), got: $DURATION"
+    fi
+
+    # Check URL format (basic check)
+    if ! [[ "$API_URL" =~ ^https?:// ]]; then
+        log_error "API_URL must start with http:// or https://, $API_URL given"
+    fi
 fi
 
 if [ $ERROR_COUNT -ne 0 ]; then
@@ -104,15 +143,17 @@ if [ $ERROR_COUNT -ne 0 ]; then
     exit 1
 fi
 
+## Exit now cleanly if we are doing a configuration test.
+if [ "$do_configtest" == true ]; then
+    log_info "Configuration test passed."
+    exit 0
+fi
+
 # Set the RDS -ps flag if the station name is set.
 PS_FLAG=$([ -n "$STATION_NAME" ] && echo "-ps $STATION_NAME" || echo "$d")
 
-#Function of what trap command calls
-function ctrl_c() {
-    printf "\n** Trapped CTRL-C after $i seconds.\n"
-    exit 0
-}
-trap ctrl_c INT
+# Handle CTRL-C to exit cleanly
+trap 'echo -e "\n** Caught CTRL-C. Exiting."; exit 0' INT
 
 # Post a message to the API to indicate that the script has started.
 post_song_to_api() {
@@ -141,10 +182,6 @@ play_song() {
 ## Transmitter player loop.
 while :
 do
-    # Post playback info to API.
     post_song_to_api
-
-    # Transmit the song to our listening audience.
     play_song
-
 done
