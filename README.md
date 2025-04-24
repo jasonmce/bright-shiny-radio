@@ -118,6 +118,7 @@ Got questions or need help? Check out the [documentation](https://github.com/jas
 [Whip Antenna Length And Frequency Calculator](http://www.csgnetwork.com/antennagenericfreqlencalc.html)
 
 [Marcin Kondej's FM Transmitter project](https://github.com/markondej/fm_transmitter)
+[Christophe Jacquet's For creating an RDS enabled version](https://github.com/ChristopheJacquet/PiFmRds)
 
 [ChatGPT](https://chatgpt.com) For the spiffy 90's Radio Station website improvements
 
