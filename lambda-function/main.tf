@@ -64,7 +64,7 @@ resource "aws_lambda_function" "playlist_handler" {
   role             = aws_iam_role.lambda_role.arn
   handler          = "lambda_function.lambda_handler"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  runtime          = "python3.9"
+  runtime          = "python3.12"
 
   environment {
     variables = {
@@ -136,10 +136,16 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   ]
 
   rest_api_id = aws_api_gateway_rest_api.playlist_api.id
-  stage_name  = "prod"
+}
+
+# API Stage
+resource "aws_api_gateway_stage" "api_stage" {
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.playlist_api.id
+  stage_name    = "prod"
 }
 
 # Output API Invoke URL
 output "invoke_url" {
-  value = "${aws_api_gateway_deployment.api_deployment.invoke_url}"
+  value = "${aws_api_gateway_stage.api_stage.invoke_url}"
 }

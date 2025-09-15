@@ -81,15 +81,27 @@ def handle_get(event):
 def generate_json(items):
     data = []
     for item in items:
-        timestamp = datetime.datetime.fromtimestamp(item['timestamp']).astimezone(ZoneInfo("America/New_York"))
-        minutes, seconds = divmod(item['duration'], 60)
+        # Convert Decimal to int for timestamp and duration
+        timestamp = int(item['timestamp']) if hasattr(item['timestamp'], 'to_integral_value') else item['timestamp']
+        duration = int(item['duration']) if hasattr(item['duration'], 'to_integral_value') else item['duration']
+        
+        timestamp_dt = datetime.datetime.fromtimestamp(timestamp).astimezone(ZoneInfo("America/New_York"))
+        minutes, seconds = divmod(duration, 60)
+        
         myDictObj = {
-            "when": timestamp.strftime("%I:%M%p %m/%d/%Y"),
-            "timeDatetime": timestamp.strftime("%Y-%m-%dT%H:%M:%S"),
+            "when": timestamp_dt.strftime("%I:%M%p %m/%d/%Y"),
+            "timeDatetime": timestamp_dt.strftime("%Y-%m-%dT%H:%M:%S"),
             "artist": item['artist'],
             "title": item['title'],
-            "length": '%d:%d' % (minutes, seconds),
+            "length": f"{minutes}:{seconds:02d}",
         }
-        # data[item['timestamp']] = myDictObj
         data.append(myDictObj)
-    return json.dumps(data)
+    
+    # Use a custom JSON encoder to handle Decimal types
+    class DecimalEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if hasattr(obj, 'to_integral_value'):
+                return int(obj) if obj % 1 == 0 else float(obj)
+            return super(DecimalEncoder, self).default(obj)
+    
+    return json.dumps(data, cls=DecimalEncoder)
