@@ -27,6 +27,13 @@ The result? A Raspberry Pi broadcasting a single song and an accompanying websit
 - FM Broadcast a single song in `.wav` format, and related RDS information.
 - Automatically log song details (artist, title, duration) via AWS Lambda.
 - Display the last five songs played on the website.
+- Include Radio Data System (RDS) information in the broadcast.
+<figure>
+<a href="readme-media/RDS BSRadio station artist title.webp">
+   <img align="right" alt="RDS display showing station, artist, and title" src="readme-media/RDS BSRadio station artist title.webp" style="margin: 1rem" title="Example FM receiver RDS display with station/artist/title" width="25%"/>
+</a>
+<figcaption>This is what an FM receiver displays when RDS information is included (station name, artist, and title).</figcaption>
+</figure>
 
 **Heads Up!**
 1. **Cost Alert**: Hosting the website on AWS incurs a small cost (~$1/month in low-traffic scenarios). Ensure you’re comfortable with potential expenses before proceeding.  I'm paying $0.50/month for Route53, and $0.04/month for everything else = $0.54 total/month.  I pay $14/year for brightshinyradio.com domain registration as well.
@@ -118,6 +125,7 @@ Got questions or need help? Check out the [documentation](https://github.com/jas
 [Whip Antenna Length And Frequency Calculator](http://www.csgnetwork.com/antennagenericfreqlencalc.html)
 
 [Marcin Kondej's FM Transmitter project](https://github.com/markondej/fm_transmitter)
+
 [Christophe Jacquet's For creating an RDS enabled version](https://github.com/ChristopheJacquet/PiFmRds)
 
 [ChatGPT](https://chatgpt.com) For the spiffy 90's Radio Station website improvements
