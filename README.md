@@ -4,7 +4,9 @@
 
 Welcome to BrightShinyRadio! This is a playful and straightforward project that merges Raspberry Pi FM broadcasting with a retro-themed website to display playlist history. Think of it as your DIY mini-radio station with a web presence, all wrapped in 90s nostalgia.
 
-What started as a proof-of-concept for AWS Lambda functions quickly spiraled into something much more fun. Inspired by quirky radio stations that play the same song repeatedly, I decided to recreate the experience with items I had lying around.
+What started as a proof-of-concept for AWS Lambda functions quickly spiraled into something much more fun. I was inspired by quirky radio stations that play the same song repeatedly, including this list on a [Reddit thread](https://www.reddit.com/r/todayilearned/comments/1cdy46v/til_if_you_tune_your_radio_to_919_fm_for_one_city/) and details in [Atlas Obscura](https://www.atlasobscura.com/places/91-9-fm-radio-montclair). I decided to recreate the experience with items I had lying around.
+
+2026 January - My home test setup has been broadcasting for over a year!
 
 The result? A Raspberry Pi broadcasting a single song and an accompanying website to share the playlist details. Let’s dive into the details so you can build your very own BrightShinyRadio station.
 
