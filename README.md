@@ -105,9 +105,9 @@ The result? A Raspberry Pi broadcasting a single song and an accompanying websit
    ```bash
    scp song.wav pi@<hostname>.local:
    ```
-4. SSH into the Pi and run the installer:
+4. Use SSH to run the installer on the Pi:
    ```bash
-   bash -c "$(curl -sL https://raw.githubusercontent.com/jasonmce/bright-shiny-radio/refs/heads/main/pi/install-pi-software.sh)"
+   ssh pi@<hostname>.local "$(curl -sL https://raw.githubusercontent.com/jasonmce/bright-shiny-radio/refs/heads/main/pi/install-pi-software.sh)"
    ```
 5. Customize `player.ini` as needed.
 6. Reboot:
